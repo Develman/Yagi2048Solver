@@ -5,6 +5,7 @@ import de.fhaachen.ti.yagi2048solver.model.Grid;
 import java.io.*;
 import java.net.URL;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.*;
@@ -16,14 +17,26 @@ public class YagiSolverWebservice
 {
     private final static Logger LOG = Logger.getLogger(YagiSolverWebservice.class.getName());
 
+    private static Grid lastGrid;
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response calculateNextDirection(Grid grid) throws Exception
     {
         LOG.log(Level.INFO, "Received new grid: {0}", grid);
 
+        if (grid.equals(lastGrid))
+        {
+            String direction = createRandom();
+
+            LOG.log(Level.INFO, "Sending random direction: {0}", direction);
+            return Response.status(Response.Status.OK).entity(direction).build();
+        }
+
         try
         {
+            lastGrid = grid;
+
             Yagi yagi = new Yagi();
             importYagiFile(yagi, "2048_better.y");
 
@@ -194,5 +207,13 @@ public class YagiSolverWebservice
 
         aThrowable.printStackTrace(printWriter);
         return result.toString();
+    }
+
+    private String createRandom()
+    {
+        Random rand = new Random();
+        int nextRand = rand.nextInt(4);
+
+        return "{\"value\": \"" + nextRand + "\"}";
     }
 }

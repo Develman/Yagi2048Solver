@@ -38,4 +38,14 @@ public class Grid
         buf.append("]");
         return buf.toString();
     }
+
+    public boolean equals(Grid grid)
+    {
+        if (grid == null)
+        {
+            return false;
+        }
+
+        return columns.equals(grid.getColumns());
+    }
 }
