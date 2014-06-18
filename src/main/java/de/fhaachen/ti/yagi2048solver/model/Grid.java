@@ -29,17 +29,13 @@ public class Grid
         StringBuilder buf = new StringBuilder();
         buf.append(" { columns: [");
 
-        for (List<Integer> col : columns)
+        for (List<Integer> column : columns)
         {
-            buf.append("[");
-            for (Integer val : col)
-            {
-                buf.append(col);
-                buf.append(",");
-            }
-            buf.append("],");
+            buf.append(column);
+            buf.append(",");
         }
 
+        buf.append("]");
         return buf.toString();
     }
 }
