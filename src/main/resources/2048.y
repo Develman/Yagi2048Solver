@@ -1,71 +1,167 @@
-fluent result = {};
+fluent maxV = {0};
+fluent directionV = {0};
+fluent limitStep = {2};
 
-action checkUp($up, $down, $left, $right)
-    precondition:
-        (($up >= $down and $up >= $left) and $up >= $right)
-    effect:
-        result = {0};
-    signal:
-        "0" 
+fluent row1 = {};
+fluent row2 = {};
+fluent row3 = {};
+fluent row4 = {};
+
+fluent highVal = {0};
+fluent step = {0};
+
+action stepUp($a)
+    effect: 
+        $nextStep = $a + 1;
+        step = {$nextStep};
 end action
 
-action checkDown($up, $down, $left, $right)
-    precondition:
-        (($down >= $up and $down >= $left) and $down >= $right)
+action resetStep() 
     effect:
-        result = {1};
-    signal:
-        "2" 
+        step = {0};
 end action
 
-action checkLeft($up, $down, $left, $right)
-    precondition:
-        (($left >= $up and $left >= $down) and $left >= $right)
+action resetMaxV() 
     effect:
-        result = {2};
-    signal:
-        "3" 
+        maxV = {0};
 end action
 
-action checkRight($up, $down, $left, $right)
-    precondition:
-        (($right >= $up and $right >= $down) and $right >= $left)
+action resetHighVal() 
     effect:
-        result = {3};
-    signal:
-        "1" 
-end action
-
-action default($up, $down, $left, $right)
-    precondition:
-        (($right == $up and $right == $down) and $right == $left)
-    effect:
-        result = {8};
-    signal:
-        "Random" 
+        highVal = {0};
 end action
 
 action print($a)
-	signal:
-		"print " + $a
+    signal: 
+        $a
 end action
 
-proc printArray()
-	for $n in result do
-		print($n);
-	end for
+action resetRows()
+    effect:
+       row1 = {};
+       row2 = {};
+       row3 = {};
+       row4 = {};
+end action
+
+action initRow1($val)
+    effect:
+       row1 += {$val};
+end action
+
+action initRow2($val)
+    effect:
+       row2 += {$val};
+end action
+
+action initRow3($val)
+    effect:
+       row3 += {$val};
+end action
+
+action initRow4($val)
+    effect:
+       row4 += {$val};
+end action
+
+action setDirectionV($dir)
+    effect:
+        directionV = {$dir};
+end action
+
+action setMaxV($max)
+    effect:
+        maxV = {$max};
+end action
+
+action setHighVal($val)
+    effect:
+        highVal = {$val};
+end action
+
+proc procInitRow($val11, $val12, $val13, $val14, $val21, $val22, $val23, $val24, $val31, $val32, $val33, $val34, $val41, $val42, $val43, $val44)
+    resetRows();
+
+    initRow1($val11);
+    initRow1($val12);
+    initRow1($val13);
+    initRow1($val14);
+
+    initRow2($val21);
+    initRow2($val22);
+    initRow2($val23);
+    initRow2($val24);
+
+    initRow3($val31);
+    initRow3($val32);
+    initRow3($val33);
+    initRow3($val34);
+
+    initRow4($val41);
+    initRow4($val42);
+    initRow4($val43);
+    initRow4($val44);
 end proc
 
-proc check($up, $down, $left, $right)
-    choose
-	checkUp($up, $down, $left, $right);
-    or
-	checkDown($up, $down, $left, $right);
-    or
-	checkLeft($up, $down, $left, $right);
-    or
-	checkRight($up, $down, $left, $right);
-    or 
-        default($up, $down, $left, $right);
-    end choose
+proc procShowResult()
+    for $val in directionV do
+        print($val);
+    end for
+    for $val in maxV do
+        print($val);
+    end for
+end proc
+
+proc procStepUp()
+    for $val in step do
+        stepUp($val);
+    end for
+end proc
+
+proc procEvaluate($val)
+    if (highVal == {$val} and highVal > maxV)
+    then 
+        setMaxV($val);
+        if step <= limitStep
+        then setDirectionV(0);
+        else setDirectionV(1);
+        end if
+    end if
+    if $val != 0
+    then setHighVal($val);
+    end if
+end proc
+
+proc procEvaluateDirection()
+    resetMaxV();
+    resetHighVal();
+    resetStep();
+
+    for $val in row1 do
+        procEvaluate($val);
+        procStepUp();
+    end for
+    resetHighVal();
+    resetStep();
+
+    for $val in row2 do
+        procEvaluate($val);
+        procStepUp();
+    end for
+    resetHighVal();
+    resetStep();
+
+    for $val in row3 do
+        procEvaluate($val);
+        procStepUp();
+    end for
+    resetHighVal();
+    resetStep();
+
+    for $val in row4 do
+        procEvaluate($val);
+        procStepUp();
+    end for
+
+    procShowResult();
 end proc

@@ -38,13 +38,13 @@ public class YagiSolverWebservice
             lastGrid = grid;
 
             Yagi yagi = new Yagi();
-            importYagiFile(yagi, "2048_better.y");
+            importYagiFile(yagi, "2048.y");
 
             ByteArrayOutputStream out = redirectOutput();
 
             String rowPrompt = buildRowPrompt(grid);
             LOG.log(Level.INFO, "Sending rowPrompt: {0}", rowPrompt);
-            yagi.prompt(rowPrompt); // "procInitRow(2,2,0,0, 4,2,0,0, 8,8,0,0, 16,2,2,0)");
+            yagi.prompt(rowPrompt);
             yagi.prompt("procEvaluateDirection()");
 
             String[] result1 = getResult(out);
@@ -56,7 +56,7 @@ public class YagiSolverWebservice
 
             String columnPrompt = buildColumnPrompt(grid);
             LOG.log(Level.INFO, "Sending columnPrompt: {0}", columnPrompt);
-            yagi.prompt(columnPrompt); // "procInitRow(2,2,0,0, 4,2,0,0, 8,8,0,0, 16,2,2,0)");
+            yagi.prompt(columnPrompt);
             yagi.prompt("procEvaluateDirection()");
 
             String[] result2 = getResult(out);
@@ -73,33 +73,6 @@ public class YagiSolverWebservice
         catch (Exception ex)
         {
             LOG.log(Level.WARNING, "Yagi error", ex);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(getStackTrace(ex)).type(
-                    MediaType.TEXT_PLAIN).build();
-        }
-    }
-
-    public Response oldCalculateNextStep(Grid grid) throws Exception
-    {
-        LOG.log(Level.INFO, "Received new grid: {0}", grid);
-
-        try
-        {
-            Yagi yagi = new Yagi();
-
-            URL yagiFile = this.getClass().getClassLoader().getResource("2048.y");
-            yagi.importFile(yagiFile.getFile());
-
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            PrintStream stream = new PrintStream(out);
-            System.setOut(stream);
-
-            yagi.prompt("check(1, 1, 1, 1)");
-            String nextStep = ""; //getNextStep(out);
-
-            return Response.status(Response.Status.OK).entity(nextStep).build();
-        }
-        catch (Exception ex)
-        {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(getStackTrace(ex)).type(
                     MediaType.TEXT_PLAIN).build();
         }

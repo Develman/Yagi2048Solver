@@ -21,12 +21,11 @@
 
     <servlet-mapping>
         <servlet-name>YagiSolver WebApp</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/ws/*</url-pattern>
     </servlet-mapping>
-
+    
     <context-param>
         <param-name>resteasy.scan</param-name>
         <param-value>true</param-value>
     </context-param>
-    
 </web-app>
